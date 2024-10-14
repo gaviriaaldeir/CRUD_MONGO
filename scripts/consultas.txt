@@ -1,1 +1,87 @@
 consultas
+1. Buscar todos los usuarios
+db.users.find({})
+
+2. Buscar un usuario por su pasaporte
+db.users.find({ pasaporte: "AB123456" })
+
+3. Actualizar la duración de un vuelo:
+db.flights.updateOne(
+  { flight_number: "AA123" },
+  { $set: { duration: 3.5 } }  // Cambiando la duración a 3.5 horas
+
+4. Eliminar una reserva por ID de usuario:
+db.reservations.deleteOne({ user_id: ObjectId("648d1a2f3f9f1c1a3d4e0f4a") })
+
+
+5. Insertar una nueva reserva:
+db.reservations.insertOne({
+  user_id: ObjectId("648d1a2f3f9f1c1a3d4e0f4a"),
+  flight_id: ObjectId("648d1a2f3f9f1c1a3d4e0f5b"),
+  seats_reserved: 2,
+  status: "confirmed",
+  payment_method: "credit_card"
+})
+
+
+6. Contar cuántas reservas tiene un usuario específico:
+db.reservations.countDocuments({user_id:ObjectId("648d1a2f3f9f1c1a3d4e0f4a") })
+
+
+7. Mostrar todos los aeropuertos en una ciudad específica (ej. paris):
+db.airports.find({ ciudad: "Madrid" }).pretty()
+
+
+8. Agregar un nuevo vuelo usando upsert
+
+db.flights.updateOne(
+  { "numero_vuelo": "IB2813" },  
+  {
+    $set: {
+      "origen": ObjectId("..."),  // ID del aeropuerto MAD
+      "destino": ObjectId("..."), // ID del aeropuerto JFK
+      "fecha": "2024-10-16T14:30:00",
+      "duracion": "7h",
+      "asientos_disponibles": 200,
+      "precio": 560.00,
+      "aerolinea": "Iberia"
+    },
+    $setOnInsert: {
+      "numero_vuelo": "IB2813"
+    }
+  },
+  { upsert: true }
+);
+
+9. Actualizar las reservas de un usuario usando each
+
+db.reservations.updateOne(
+  { "usuario_id": ObjectId("..."), "vuelo_id": ObjectId("...") },  
+  {
+    $set: { "estado": "confirmado" },
+    $addToSet: { "asientos_reservados": { $each: [1, 2] } }
+  }
+);
+
+10.  Actualizar la capacidad de un aeropuerto usando setOnInsert
+
+db.airports.updateOne(
+  { "codigo": "LHR" }, 
+  {
+    $setOnInsert: {
+      "nombre": "Aeropuerto de Heathrow",
+      "ciudad": "Londres",
+      "pais": "Reino Unido",
+      "capacidad_anual": 80000000,
+      "numero_terminales": 5
+    }
+  },
+  { upsert: true }
+);
+
+
+
+
+
+
+
